@@ -1,0 +1,17 @@
+{
+    "name": "Ryan Ripple",
+    "short_name": "rripple",
+    "theme_color": "#ffcbe4",
+    "background_color": "#fa99ca",
+    "display": "standalone",
+    "scope": "/",
+    "start_url": "https://localhost/",
+    "description": "Tic Tac Toe Game",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "",
+            "sizes": "1024x1024"
+        }
+    ]
+}
