@@ -1,5 +1,6 @@
 
-function shuffle(array) {
+function shuffle(array)
+{
   let currentIndex = array.length,  randomIndex;
 
   // While there remain elements to shuffle...
@@ -16,6 +17,7 @@ function shuffle(array) {
 
   return array;
 }
+
 let TicTacToe = ( function( $ )
 {
 	// 0 = not played, -1 = computer, 1 = player
@@ -39,7 +41,7 @@ let TicTacToe = ( function( $ )
 		row.forEach( element => document.getElementById( element ).style.backgroundColor = "red" );
 	};
 
-	function GameOver( d )
+	function gameOver( d )
 	{
 		const msg = ( d == 1 ) ? 'Winner!' : ( ( d == -1 ) ? 'Loser!' : 'Draw!' );
 		alert( msg );
@@ -62,7 +64,7 @@ let TicTacToe = ( function( $ )
 			{
 				highlightRow( test );
 
-				GameOver( bUser ? 1 : -1 );
+				gameOver( bUser ? 1 : -1 );
 			}
 		}
 	};
@@ -195,7 +197,7 @@ let TicTacToe = ( function( $ )
 		}
 
 		// couldn't play
-		GameOver();
+		gameOver();
 	};
 
 	return $;
