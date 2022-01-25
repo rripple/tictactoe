@@ -104,7 +104,7 @@ let TicTacToe = ( function( $ )
 
 		checkForWin( 1 );
 
-		setTimeout( "TicTacToe.ComputerPlay()", 500 );
+		setTimeout( "TicTacToe.ComputerPlay()", 1000 );
 	};
 
 	// Computer logic
