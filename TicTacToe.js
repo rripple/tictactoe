@@ -102,7 +102,7 @@ let TicTacToe = ( function( $ )
 		elem.innerHTML = 'x';
 		playedSpaces[elem.id] = 1;
 
-		checkForWin( 1 );
+		setTimeout( "checkForWin( 1 )", 200 );
 
 		setTimeout( "TicTacToe.ComputerPlay()", 500 );
 	};
@@ -110,6 +110,12 @@ let TicTacToe = ( function( $ )
 	// Computer logic
 	$.ComputerPlay = function()
 	{
+		if( playedSpaces[4] == 0 )
+		{
+			playSquare( 4 );
+			return;
+		}
+
 		shuffle( winningMoves );
 
 		// go for win

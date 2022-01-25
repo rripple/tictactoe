@@ -5,7 +5,7 @@
     "background_color": "#fa99ca",
     "display": "standalone",
     "scope": "/",
-    "start_url": "https://localhost/",
+    "start_url": "https://rripple.github.io/tictactoe",
     "description": "Tic Tac Toe Game",
     "orientation": "any",
     "icons": [
