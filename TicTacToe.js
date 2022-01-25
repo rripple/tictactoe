@@ -102,7 +102,7 @@ let TicTacToe = ( function( $ )
 		elem.innerHTML = 'x';
 		playedSpaces[elem.id] = 1;
 
-		setTimeout( "checkForWin( 1 )", 200 );
+		checkForWin( 1 );
 
 		setTimeout( "TicTacToe.ComputerPlay()", 500 );
 	};
