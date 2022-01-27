@@ -1,21 +1,22 @@
 
 function shuffle(array)
 {
-  let currentIndex = array.length,  randomIndex;
+	let currentIndex = array.length,  randomIndex;
 
-  // While there remain elements to shuffle...
-  while (currentIndex != 0) {
+	// While there remain elements to shuffle...
+	while (currentIndex != 0)
+	{
+		// Pick a remaining element...
+		randomIndex = Math.floor(Math.random() * currentIndex);
+		currentIndex--;
 
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
+		// And swap it with the current element.
+		[array[currentIndex], array[randomIndex]] = [
+				array[randomIndex], array[currentIndex]
+			];
+	}
 
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
-
-  return array;
+	return array;
 }
 
 let TicTacToe = ( function( $ )
@@ -41,6 +42,7 @@ let TicTacToe = ( function( $ )
 		row.forEach( element => document.getElementById( element ).style.backgroundColor = "red" );
 	};
 
+	// Display message and kill js
 	function gameOver( d )
 	{
 		const msg = ( d == 1 ) ? 'Winner!' : ( ( d == -1 ) ? 'Loser!' : 'Draw!' );
@@ -51,21 +53,12 @@ let TicTacToe = ( function( $ )
 	// Look for a winner
 	function checkForWin( bUser )
 	{
-		for( let p = 0; p < winningMoves.length; p++ )
+		let winner = winningMoves.filter( t => ( playedSpaces[t[0]] && playedSpaces[t[1]] && playedSpaces[t[2]] ) ).filter( t => playedSpaces[t[0]] == playedSpaces[t[1]] && playedSpaces[t[1]] == playedSpaces[t[2]] );
+
+		if( winner.length )
 		{
-			let test = winningMoves[p];
-
-			if( !playedSpaces[test[0]] || !playedSpaces[test[1]] || !playedSpaces[test[2]] )
-			{
-				continue;
-			}
-
-			if( playedSpaces[test[0]] == playedSpaces[test[1]] && playedSpaces[test[1]] == playedSpaces[test[2]] )
-			{
-				highlightRow( test );
-
-				gameOver( bUser ? 1 : -1 );
-			}
+			highlightRow( winner[0] );
+			gameOver( bUser ? 1 : -1 );
 		}
 	};
 
@@ -85,11 +78,10 @@ let TicTacToe = ( function( $ )
 		{
 			let oTDs = DOMGameBoard.querySelectorAll( 'td' );
 
-			for( let i = 0; i < oTDs.length; i++ )
-			{
-				oTDs[i].id = i;
-				oTDs[i].addEventListener( 'click', function() { TicTacToe.ClickSquare(this); }, false );
-			}
+			oTDs.forEach( function( elem, i ) {
+				elem.id = i;
+				elem.addEventListener( 'click', function() { TicTacToe.ClickSquare(this); }, false );
+			} );
 		}
 	};
 
@@ -104,20 +96,38 @@ let TicTacToe = ( function( $ )
 
 		checkForWin( 1 );
 
-		setTimeout( "TicTacToe.ComputerPlay()", 1000 );
+		setTimeout( "TicTacToe.ComputerPlay()", 750 );
 	};
 
 	// Computer logic
 	$.ComputerPlay = function()
 	{
+		// Play center square if not played
 		if( playedSpaces[4] == 0 )
 		{
 			playSquare( 4 );
 			return;
 		}
 
-		shuffle( winningMoves );
+		const winningMove = winningMoves.filter( squares => playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == -2 );
 
+		if( winningMove.length )
+		{
+			playSquare( winningMove[0].find( sq => playedSpaces[sq] == 0 ) );
+			return;
+		}
+
+		const defendingMove = winningMoves.filter( squares => playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == 2 );
+
+		if( defendingMove.length )
+		{
+			playSquare( defendingMove[0].find( sq => playedSpaces[sq] == 0 ) );
+			return;
+		}
+
+		// Randomize logic
+		shuffle( winningMoves );
+/*
 		// go for win
 		for( let p = 0; p < winningMoves.length; p++ )
 		{
@@ -171,6 +181,7 @@ let TicTacToe = ( function( $ )
 				}
 			}
 		}
+*/
 
 		// Just Play after 1
 		for( let p = 0; p < winningMoves.length; p++ )
