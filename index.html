@@ -4,56 +4,8 @@
 	<meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 	<title>TicTacToe</title>
-	<link rel="manifest" href="manifest.json">
-	<style>
-html
-{
-	height: 100%;
-}
-
-body
-{
-	height: 100%;
-	margin: 0;
-	padding: 0;
-	/* Prevent scrollbar appearing on page transition */
-	overflow-y: hidden;
-}
-
-.gameboard
-{
-	height: 300px;
-	margin: 0 auto;
-	width: 300px;
-}
-
-.gameboard table
-{
-	height: 100%;
-	width: 100%;
-}
-
-.gameboard table td
-{
-	font-size: 80px;
-	height: 100px;
-	text-align: center;
-	vertical-align: middle;
-	width: 100px;
-}
-
-.gameboard table td.horiz
-{
-	border-bottom: 2px solid #000;
-	border-top: 2px solid #000;
-}
-
-.gameboard table td.vert
-{
-	border-left: 2px solid #000;
-	border-right: 2px solid #000;
-}
-	</style>
+	<link rel="manifest" href="manifest.json" />
+	<link rel="stylesheet" href="TicTacToe.css" media="all" />
 </head>
 <body onload="TicTacToe.Init();">
 	<section class="gameboard">
@@ -74,6 +26,9 @@ body
 				<td></td>
 			</tr>
 		</table>
+		<div class="button-bar">
+			<button class="reset" onclick="TicTacToe.Reset()">Reset</button>
+		</div>
 	</section>
 </body>
 <script src="TicTacToe.js"></script>

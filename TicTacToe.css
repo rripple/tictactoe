@@ -1,0 +1,69 @@
+
+/** HTML5 Boilerplate **/
+* { box-sizing: border-box; }
+
+article, aside, details, figcaption, figure, footer, header, hgroup, nav, section { display: block; }
+audio, canvas, video { display: inline-block; display: inline; zoom: 1; }
+audio:not([controls]) { display: none; }
+[hidden] { display: none; }
+
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+html, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body { margin: 0; font-size: 1em; line-height: 1.4; overflow-y: hidden; }
+
+::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::selection { background: #fe57a1; color: #fff; text-shadow: none; }
+
+.gameboard
+{
+	height: 330px;
+	margin: 0 auto;
+	width: 300px;
+}
+
+.gameboard table
+{
+	height: 100%;
+	width: 100%;
+}
+
+.gameboard table td
+{
+	font-size: 70px;
+	height: 100px;
+	text-align: center;
+	vertical-align: middle;
+	width: 100px;
+}
+
+.gameboard table td.winner
+{
+	background-color: #F00;
+}
+
+.gameboard table td.horiz
+{
+	border-bottom: 3px solid #000;
+	border-top: 3px solid #000;
+}
+
+.gameboard table td.vert
+{
+	border-left: 3px solid #000;
+	border-right: 3px solid #000;
+}
+
+.gameboard div.button-bar
+{
+	margin: 20px auto;
+	text-align: center;
+}
+
+.gameboard div.button-bar button.reset
+{
+	background-color: lime;
+	border-radius: 5px;
+	cursor: pointer;
+	font-size: 14pt;
+	padding: 5px 10px;
+}

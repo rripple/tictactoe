@@ -1,28 +1,14 @@
 
-function shuffle(array)
+Array.prototype.random = function ()
 {
-	let currentIndex = array.length,  randomIndex;
-
-	// While there remain elements to shuffle...
-	while (currentIndex != 0)
-	{
-		// Pick a remaining element...
-		randomIndex = Math.floor(Math.random() * currentIndex);
-		currentIndex--;
-
-		// And swap it with the current element.
-		[array[currentIndex], array[randomIndex]] = [
-				array[randomIndex], array[currentIndex]
-			];
-	}
-
-	return array;
+	return this[Math.floor((Math.random()*this.length))];
 }
 
 let TicTacToe = ( function( $ )
 {
 	// 0 = not played, -1 = computer, 1 = player
 	let playedSpaces = [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+	let bAllowPlay = true;
 
 	// Winning matrix
 	const winningMoves = [
@@ -39,7 +25,7 @@ let TicTacToe = ( function( $ )
 	// Display winning set
 	function highlightRow( row )
 	{
-		row.forEach( element => document.getElementById( element ).style.backgroundColor = "red" );
+		row.forEach( element => document.getElementById( element ).classList.add( 'winner' ) );
 	};
 
 	// Display message and kill js
@@ -47,13 +33,13 @@ let TicTacToe = ( function( $ )
 	{
 		const msg = ( d == 1 ) ? 'Winner!' : ( ( d == -1 ) ? 'Loser!' : 'Draw!' );
 		alert( msg );
-		TicTacToe = '';
+		bAllowPlay = false;
 	};
 
 	// Look for a winner
 	function checkForWin( bUser )
 	{
-		let winner = winningMoves.filter( t => ( playedSpaces[t[0]] && playedSpaces[t[1]] && playedSpaces[t[2]] ) ).filter( t => playedSpaces[t[0]] == playedSpaces[t[1]] && playedSpaces[t[1]] == playedSpaces[t[2]] );
+		const winner = winningMoves.filter( t => !isPlayable( t ) ).filter( t => playedSpaces[t[0]] == playedSpaces[t[1]] && playedSpaces[t[1]] == playedSpaces[t[2]] );
 
 		if( winner.length )
 		{
@@ -65,30 +51,72 @@ let TicTacToe = ( function( $ )
 	// Computer picked a square
 	function playSquare( id )
 	{
-		playedSpaces[id] = -1;
-		document.getElementById( id ).innerHTML = 'o';
+		if( !bAllowPlay )
+			return;
+
+		if( typeof( id ) !== 'undefined' )
+		{
+			playedSpaces[id] = -1;
+			document.getElementById( id ).innerHTML = 'o';
+		}
+		else
+		{
+			let possiblePlays = [];
+
+			playedSpaces.map( ( i, idx ) => { if( i == 0 ) possiblePlays[possiblePlays.length] = idx; } );
+
+			const sq = possiblePlays.random();
+
+			if( typeof( sq ) !== 'undefined' )
+			{
+				playSquare( sq );
+				return;
+			}
+
+			// couldn't play
+			gameOver();
+			return;
+		}
 
 		checkForWin();
 	};
 
+	function isPlayable( sq )
+	{
+		if( typeof( sq ) == 'object' )
+		{
+			return sq.map( i => isPlayable( i ) ).reduce( function( prev, curr ) {
+					return ( prev == true || curr == true ) ? true : false;
+			} );
+		}
+
+		return playedSpaces[sq] == 0;
+	};
+
 	$.Init = function()
 	{
-		let DOMGameBoard = document.querySelector( '.gameboard' );
+		const DOMGameBoard = document.querySelector( '.gameboard' );
 		if( DOMGameBoard )
 		{
-			let oTDs = DOMGameBoard.querySelectorAll( 'td' );
+			const oTDs = DOMGameBoard.querySelectorAll( 'td' );
 
 			oTDs.forEach( function( elem, i ) {
 				elem.id = i;
+				elem.innerHTML = "&nbsp;";
 				elem.addEventListener( 'click', function() { TicTacToe.ClickSquare(this); }, false );
 			} );
 		}
+
+		$.SetGamePlay();
 	};
 
 	// User picked a square
 	$.ClickSquare = function( elem )
 	{
-		if( elem.innerHTML.length )
+		if( !bAllowPlay )
+			return;
+
+		if( playedSpaces[elem.id] )
 			return;
 
 		elem.innerHTML = 'x';
@@ -96,12 +124,15 @@ let TicTacToe = ( function( $ )
 
 		checkForWin( 1 );
 
-		setTimeout( "TicTacToe.ComputerPlay()", 750 );
+		setTimeout( "TicTacToe.ComputerPlay()", 500 );
 	};
 
 	// Computer logic
 	$.ComputerPlay = function()
 	{
+		if( !bAllowPlay )
+			return;
+
 		// Play center square if not played
 		if( playedSpaces[4] == 0 )
 		{
@@ -109,7 +140,7 @@ let TicTacToe = ( function( $ )
 			return;
 		}
 
-		const winningMove = winningMoves.filter( squares => playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == -2 );
+		const winningMove = winningMoves.filter( squares => isPlayable( squares ) && ( playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == -2 ) );
 
 		if( winningMove.length )
 		{
@@ -117,7 +148,7 @@ let TicTacToe = ( function( $ )
 			return;
 		}
 
-		const defendingMove = winningMoves.filter( squares => playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == 2 );
+		const defendingMove = winningMoves.filter( squares => isPlayable( squares ) && playedSpaces[squares[0]] + playedSpaces[squares[1]] + playedSpaces[squares[2]] == 2 );
 
 		if( defendingMove.length )
 		{
@@ -125,96 +156,29 @@ let TicTacToe = ( function( $ )
 			return;
 		}
 
-		// Randomize logic
-		shuffle( winningMoves );
-/*
-		// go for win
-		for( let p = 0; p < winningMoves.length; p++ )
+		playSquare();
+	};
+
+	$.Reset = function()
+	{
+		const DOMGameBoard = document.querySelector( '.gameboard' );
+		if( DOMGameBoard )
 		{
-			let test = winningMoves[p];
+			const oTDs = DOMGameBoard.querySelectorAll( 'td' );
 
-			if( playedSpaces[test[0]] + playedSpaces[test[1]] + playedSpaces[test[2]] == -2 )
-			{
-				if( playedSpaces[test[0]] == 0 )
-				{
-					playSquare( test[0] );
-					return;
-				}
-
-				if( playedSpaces[test[1]] == 0 )
-				{
-					playSquare( test[1] );
-					return;
-				}
-
-				if( playedSpaces[test[2]] == 0 )
-				{
-					playSquare( test[2] );
-					return;
-				}
-			}
+			oTDs.forEach( function( elem, i ) {
+				elem.classList.remove( 'winner' );
+				elem.innerHTML = '&nbsp;';
+				} );
 		}
 
-		// block any that have 2 of 3 already .. then look for 1
-		for( let p = 0; p < winningMoves.length; p++ )
-		{
-			let test = winningMoves[p];
+		$.SetGamePlay();
+	};
 
-			if( playedSpaces[test[0]] + playedSpaces[test[1]] + playedSpaces[test[2]] == 2 )
-			{
-				if( playedSpaces[test[0]] == 0 )
-				{
-					playSquare( test[0] );
-					return;
-				}
-
-				if( playedSpaces[test[1]] == 0 )
-				{
-					playSquare( test[1] );
-					return;
-				}
-
-				if( playedSpaces[test[2]] == 0 )
-				{
-					playSquare( test[2] );
-					return;
-				}
-			}
-		}
-*/
-
-		// Just Play after 1
-		for( let p = 0; p < winningMoves.length; p++ )
-		{
-			let test = winningMoves[p];
-
-			if( playedSpaces[test[0]] && ( !playedSpaces[test[1]] || !playedSpaces[test[2]] ) )
-			{
-				if( !playedSpaces[test[1]] )
-				{
-					playSquare( test[1] );
-					return;
-				}
-				else
-				{
-					playSquare( test[2] );
-					return;
-				}
-			}
-		}
-
-		// Just Play
-		for( let p = 0; p < playedSpaces.length; p++ )
-		{
-			if( playedSpaces[p] == 0 )
-			{
-				playSquare( p );
-				return;
-			}
-		}
-
-		// couldn't play
-		gameOver();
+	$.SetGamePlay = function()
+	{
+		playedSpaces = [ 0, 0, 0, 0, 0, 0, 0, 0, 0 ];
+		bAllowPlay = true;
 	};
 
 	return $;
